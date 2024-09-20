@@ -1,6 +1,11 @@
 import Button from "../Button"
+import useTask from "./useTask"
 
-function TaskAdd({ addTask }) {
+function TaskAdd() {
+  const {
+    actions: { addTask },
+  } = useTask()
+
   const handleAddTask = (e) => {
     e.preventDefault()
     addTask(e.target.title.value)

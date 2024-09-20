@@ -1,32 +1,43 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 
 import TaskHeader from "./taskHeader"
+import { StepList } from "../step"
+import useTask from "./useTask"
+import TaskControls from "./TaskControls"
+import TaskProgress from "./TaskProgress"
 
-function Task({ task, editTask, deleteTask }) {
+function Task({ id }) {
+  const {
+    state: { expandedId },
+  } = useTask()
+
+  const isExpanded = expandedId === id
+
   const [isEditable, setEditable] = useState(false)
 
+  const cardId = useMemo(() => `card-${Math.random()}`, [])
+  const titleId = useMemo(() => `title-${Math.random()}`, [])
+
   return (
-    <li className="card">
+    <li className="card" id={cardId} aria-labelledby={titleId}>
       <TaskHeader
-        task={task}
+        id={id}
         isEditable={isEditable}
         setEditable={setEditable}
-        editTask={editTask}
+        cardId={cardId}
+        titleId={titleId}
       />
-      <ul className="card-controls">
-        {!isEditable && (
-          <li>
-            <button className="card-control" onClick={() => setEditable(true)}>
-              Edit
-            </button>
-          </li>
-        )}
-        <li>
-          <button className="card-control" onClick={() => deleteTask(task.id)}>
-            Delete
-          </button>
-        </li>
-      </ul>
+      {isExpanded && (
+        <>
+          <TaskControls
+            id={id}
+            isEditable={isEditable}
+            setEditable={setEditable}
+          />
+          <StepList taskId={id} />
+        </>
+      )}
+      <TaskProgress id={id} />
     </li>
   )
 }

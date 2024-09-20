@@ -1,42 +1,19 @@
-import { useEffect, useState } from "react"
-import initialState from "./fixture"
 import Task from "./Task"
 import TaskAdd from "./TaskAdd"
-
-function getInitialState() {
-  return (
-    JSON.parse(localStorage.getItem("task-manager-items-list")) || initialState
-  )
-}
+import useTask from "./useTask"
 
 function TaskList() {
-  const [tasks, setTasks] = useState(getInitialState)
+  const {
+    state: { tasks },
+  } = useTask()
 
-  useEffect(() => {
-    localStorage.setItem("task-manager-item-list", JSON.stringify(tasks))
-  }, [tasks])
-
-  const addTask = (title) =>
-    setTasks((prevState) =>
-      prevState.concat([{ id: Math.random() * 1000000, title }])
-    )
-  const editTask = (id, title) =>
-    setTasks((prevState) =>
-      prevState.map((task) => (task.id === id ? { ...task, title } : task))
-    )
-  const deleteTask = (id) =>
-    setTasks((prevState) => prevState.filter((task) => task.id !== id))
+  const taskIds = tasks.map(({ id }) => id)
   return (
     <ol className="lane">
-      {tasks.map((task) => (
-        <Task
-          key={task.id}
-          task={task}
-          editTask={editTask}
-          deleteTask={deleteTask}
-        />
+      {taskIds.map((taskId) => (
+        <Task key={taskId} id={taskId} />
       ))}
-      <TaskAdd addTask={addTask} />
+      <TaskAdd />
     </ol>
   )
 }
